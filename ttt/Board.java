@@ -2,11 +2,13 @@ public class Board {
     private byte[] board;
     private byte currentPlayer;
     private boolean isComplete;
+    private String alertMessage;
     private int winner;
     public Board() {
         board = new byte[9];
         currentPlayer = 1; // 1 == x 2 == o
         winner = 0; // 0 == nobody, 1 == x, 2 == o, 3 == Stalemate
+        alertMessage = "";
     }
 
     public byte[] getBoard() {
@@ -26,9 +28,9 @@ public class Board {
             case 0:
                 return ' ';
             case 1:
-                return 'x';
+                return 'X';
             case 2:
-                return 'o';
+                return 'O';
             default:
                 return '?';
         }
@@ -52,18 +54,24 @@ public class Board {
 
     public void setPiece(int square) {
         if (square < 1 || square > 9) {
-            System.out.println("Number must be between 1 and 9");
+            alertMessage = ("Number must be between 1 and 9");
             return;
         }
         if (board[square-1] == 0) {
             board[square-1] = currentPlayer;
             setNextPlayer();
         } else {
-            System.out.println("Choose another number, " + square + " is already taken."); 
+            alertMessage = ("Choose another number, " + square + " is already taken."); 
         }
     }
 
+    public String getAlertMessage() {
+        return alertMessage;
+    }
+
     private void setNextPlayer() {
+        // Reset alert message as we must have been successful
+        alertMessage = "";
         if (currentPlayer == 1) {
             currentPlayer = 2;
         } else {
@@ -71,59 +79,27 @@ public class Board {
         }
     }
 
-    public void checkBoardState() { // do this smarter?
-        if (board[0] == 1 && board[1] == 1 && board[2] == 1) {
-            // top row
-            winner = 1;
-        } else if (board[3] == 1 && board[4] == 1 && board[5] == 1) {
-            // middle row
-            winner = 1;
-        } else if (board[6] == 1 && board[7] == 1 && board[8] == 1) {
-            // bottom row
-            winner = 1;
-        } else if (board[0] == 1 && board[3] == 1 && board[6] == 1) {
-            // 1st col
-            winner = 1;
-        } else if (board[1] == 1 && board[4] == 1 && board[7] == 1) {
-            // 2nd col
-            winner = 1;
-        } else if (board[2] == 1 && board[5] == 1 && board[8] == 1) {
-            // 3rd col
-            winner = 1;
-        } else if (board[0] == 1 && board[4] == 1 && board[8] == 1) {
-            // Tl -> Br diag
-            winner = 1;
-        } else if (board[2] == 1 && board[4] == 1 && board[6] == 1){
-            // Tr -> Bl diag
-            winner = 1;
+    public void checkBoardState() { 
+        for (int i = 1; i <= 2; i++) { // Loop thru both players
+            for (int j = 0; j < 3*3; j += 3) {
+                if (board[j] == i && board[j+1] == i && board[j+2] == i) { // Rows
+                    winner = i;
+                }
+            }   
+
+            for (int j = 0; j < 3; j++) {
+                if (board[j] == i && board[j+3] == i && board[j+6] == i) { // cols
+                    winner = 1;
+                }
+            }
+
+            if (board[0] == i && board[4] == i && board[8] == i) { // Tl -> Br diag
+                winner = i;
+            } else if (board[2] == i && board[4] == i && board[6] == i) { // Tr -> Bl diag
+                winner = i;
+            }
         }
         
-
-        if (board[0] == 2 && board[1] == 2 && board[2] == 2) {
-            // top row
-            winner = 2;
-        } else if (board[3] == 2 && board[4] == 2 && board[5] == 2) {
-            // middle row
-            winner = 2;
-        } else if (board[6] == 2 && board[7] == 2 && board[8] == 2) {
-            // bottom row
-            winner = 2;
-        } else if (board[0] == 2 && board[3] == 2 && board[6] == 2) {
-            // 1st col
-            winner = 2;
-        } else if (board[1] == 2 && board[4] == 2 && board[7] == 2) {
-            // 2nd col
-            winner = 2;
-        } else if (board[2] == 2 && board[5] == 2 && board[8] == 2) {
-            // 3rd col
-            winner = 2;
-        } else if (board[0] == 2 && board[4] == 2 && board[8] == 2) {
-            // Tl -> Br diag
-            winner = 2;
-        } else if (board[2] == 2 && board[4] == 2 && board[6] == 2){
-            // Tr -> Bl diag
-            winner = 2;
-        }
         int sum = 0;
 
         for (byte values:board) {

@@ -8,6 +8,7 @@ public class TicTacToe {
         clear();
        do {
             board.drawBoard();
+            System.out.println(board.getAlertMessage());
             System.out.println("It is " + board.getCurrentPlayer() + "'s turn");
             if (console.hasNextInt()) {
                 board.setPiece(console.nextInt());
@@ -36,9 +37,9 @@ public class TicTacToe {
         }
     }
     public static void clear() {
-        try{
+        try {
             new ProcessBuilder("clear").inheritIO().start().waitFor();
-        }catch(Exception e2){}
+        } catch (Exception e2) {}
     }
 
 }
